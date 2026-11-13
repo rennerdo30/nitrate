@@ -1,0 +1,67 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    env:
+      RUSTC_WRAPPER: sccache
+      SCCACHE_GHA_ENABLED: "true"
+      CARGO_INCREMENTAL: "0"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: rustup show active-toolchain
+      - uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo test --workspace --locked
+      - run: cargo build --workspace --release --locked
+  installer:
+    name: Windows setup (build and lifecycle)
+    runs-on: windows-latest
+    timeout-minutes: 45
+    env:
+      RUSTC_WRAPPER: sccache
+      SCCACHE_GHA_ENABLED: "true"
+      CARGO_INCREMENTAL: "0"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+      - run: cargo build --release --locked -p nitrate
+      - name: Package (pinned NSIS 3.13) and test install, reinstall, uninstall
+        shell: pwsh
+        run: |
+          $makensis = ./scripts/fetch-nsis.ps1 -Destination "$env:RUNNER_TEMP/nsis"
+          $meta = cargo metadata --format-version 1 --no-deps | ConvertFrom-Json
+          ./scripts/package.ps1 -MakeNsis $makensis -BinDir (Join-Path $meta.target_directory 'release')
+          $toml = Get-Content Cargo.toml -Raw
+          $null = $toml -match '(?m)^\[workspace\.package\][\s\S]*?^version\s*=\s*"([^"]+)"'
+          $v = $Matches[1]
+          ./scripts/test-installer.ps1 -Setup (Resolve-Path "artifacts/installer/nitrate-$v-setup.exe") -Version $v
+  deny:
+    name: cargo-deny (licenses)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2.1.1
+        with:
+          command: check licenses

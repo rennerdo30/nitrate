@@ -1,0 +1,12 @@
+[package]
+name = "nitrate-mpv"
+description = "Loads libmpv at runtime and wraps the parts of its C API that Nitrate uses."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+libloading = "0.9.1"

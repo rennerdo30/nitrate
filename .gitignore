@@ -1,0 +1,8 @@
+/target/
+# Machine-local Cargo config (template: .cargo/config.example.toml)
+/.cargo/config.toml
+/fixtures/
+/artifacts/
+*.log
+# Local Pair Desk link
+/.pair-desk.json
