@@ -18,6 +18,7 @@ nitrate-ui = { path = "../nitrate-ui" }
 winit = "0.30.13"
 
 [target.'cfg(windows)'.dependencies]
+nitrate-update = { path = "../nitrate-update" }
 png = "0.18.1"
 rfd = { version = "0.18.0", default-features = false }
 windows = { version = "0.62.2", features = [
@@ -29,3 +30,6 @@ windows = { version = "0.62.2", features = [
     "Win32_Graphics_Dxgi_Common",
     "Win32_UI_WindowsAndMessaging",
 ] }
+
+[build-dependencies]
+embed-resource = "3.0.12"

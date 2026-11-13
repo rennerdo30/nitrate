@@ -39,6 +39,8 @@ pub struct State {
     pub dragging: Option<Target>,
     /// A message in the middle of the window (errors, hints).
     pub message: Option<String>,
+    /// A small notice in the top right corner (an available update).
+    pub notice: Option<String>,
 }
 
 impl Default for State {
@@ -57,6 +59,7 @@ impl Default for State {
             pointer: None,
             dragging: None,
             message: None,
+            notice: None,
         }
     }
 }
@@ -209,6 +212,7 @@ pub struct View {
     /// Hover position on the timeline (x in pixels) and its time label.
     pub preview: Option<(u32, String)>,
     pub message: Option<String>,
+    pub notice: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -260,6 +264,7 @@ impl View {
             hover,
             preview,
             message: state.message.clone(),
+            notice: state.notice.clone(),
         }
     }
 }
@@ -349,6 +354,19 @@ mod tests {
             assert!(l.x as u32 + l.width <= 800 && l.y as u32 + l.height <= 450);
             assert_eq!(l.rgba.len(), (l.width * l.height * 4) as usize);
         }
+    }
+
+    #[test]
+    fn the_update_notice_is_a_top_right_layer_inside_the_window() {
+        let layout = Layout::new(800, 450, 1.0);
+        let base = State { has_file: true, duration: 60.0, ..State::default() };
+        let with = State { notice: Some("Nitrate 0.2.0 is available".into()), ..base.clone() };
+        let (a, b) =
+            (paint(&View::new(&base, layout), &Fonts::none()), paint(&View::new(&with, layout), &Fonts::none()));
+        assert_eq!(b.len(), a.len() + 1);
+        let n = b.iter().find(|l| !a.contains(l)).expect("the notice layer");
+        assert!(n.x > 400 && n.y < 40, "top right: {}, {}", n.x, n.y);
+        assert!(n.x as u32 + n.width <= 800);
     }
 
     #[test]

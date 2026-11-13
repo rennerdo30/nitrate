@@ -136,13 +136,13 @@ jobs:
         run: |
           set -euo pipefail
           version="${RELEASE_TAG#v}"
-          # One checksum file over every package (the planned updater's contract).
+          # One checksum file over every package: the updater's contract.
           (cd dist && sha256sum nitrate-* > SHA256SUMS.txt && cat SHA256SUMS.txt)
           awk -v v="$version" '$0 ~ "^## "v"[[:space:]]*$" {on=1; next} /^## / {on=0} on' CHANGELOG.md > notes.md || true
           {
             echo
             echo "**Install:** Windows: run the setup (per user, no admin rights). macOS and Linux: unpack the archive."
-            echo "Check every download against SHA256SUMS.txt."
+            echo "Installed copies find updates themselves (Ctrl+Shift+U installs); every download is checked against SHA256SUMS.txt."
           } >> notes.md
           flags=(--draft --verify-tag --title "Nitrate $RELEASE_TAG" --notes-file notes.md)
           case "$RELEASE_TAG" in *-*) flags+=(--prerelease) ;; esac

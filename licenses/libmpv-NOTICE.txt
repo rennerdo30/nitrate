@@ -1,0 +1,23 @@
+libmpv-2.dll in this package
+
+Nitrate loads libmpv-2.dll at runtime. It is a separate library, not part of
+Nitrate's own code, and you may replace it with any compatible libmpv build
+(client API 2.x with the Direct3D 11 render API).
+
+What it is
+  mpv, commit fe753a7824 (2026-11-13), built as libmpv with its LGPL
+  configuration. The DLL contains FFmpeg and other libraries built in the
+  same LGPL configuration.
+
+Licence
+  GNU Lesser General Public License, version 2.1 or later. The full text is
+  in LGPL-2.1.txt next to this file.
+
+Source code
+  mpv:              https://github.com/mpv-player/mpv/tree/fe753a7824
+  The build:        https://github.com/zhongfly/mpv-winbuild/releases/tag/2026-11-13-fe753a7824
+  Build scripts and patches for the exact configuration, including FFmpeg and
+  every bundled library and its version, are in that repository at that tag.
+  If those links stop working, ask for the source at
+  https://github.com/rennerdo30/nitrate/issues and it will be provided for at
+  least three years after this release.

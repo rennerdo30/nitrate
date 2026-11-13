@@ -2,11 +2,11 @@
 
 Read `E:/Development/AGENTS.md` and `E:/Development/general-agent-rules.md` first. They win over anything here unless this file is stricter.
 
-- **Product:** Nitrate, a media player in Rust for Windows, macOS and Linux, built on libmpv. **P0 is speed**, locally and over remote desktop (owner, 2026-11-14: "really high, high, high performance, even in Windows and remote desktop environments"). It must look modern and feel better than mpv with a custom UI, IINA, MPC-HC and VLC, not just match them. Scope and budgets: `docs/SPEC.md`.
+- **Product:** Nitrate, a media player in Rust for Windows, macOS and Linux, built on libmpv. **P0 is speed**, locally and over remote desktop (owner, 2026-11-14: "really high, high, high performance, even in Windows and remote desktop environments"). It must look modern and feel better than every other media player, not just match them. Scope and budgets: `docs/SPEC.md`.
 - **Pair Desk:** project `nitrate` (ids `NT-n`; created 2026-11-14). Handoff, backlog, plans and evidence live there, never in committed files.
 - **Identity:** commit only as `rennerdo30 <9086097+rennerdo30@users.noreply.github.com>`.
 - **Repository:** public at `https://github.com/rennerdo30/nitrate` (owner, 2026-11-14). Every release needs the owner's yes. Push with explicit refs only: `git push origin HEAD:refs/heads/<branch>`.
-- **Public from day one:** no secrets, no owner-PC config in committed files (`.cargo/config.toml` is local), no third-party code, media or assets, and other products' names only as factual mentions.
+- **Public from day one:** no secrets, no owner-PC config in committed files (`.cargo/config.toml` is local), no third-party code, media or assets, and **no other products' names or trademarks** anywhere public: files, code comments, commit messages, PR texts, release notes (owner rule for ffwd, 2026-11-14, applied here too). Exception: the libraries Nitrate ships or loads (libmpv, FFmpeg) are named where licences require it.
 - **CI runners:** GitHub-hosted (public repository rule, owner 2026-11-04).
 - **Licence:** Nitrate is MIT. Rust dependencies are permissive only (MIT, Apache-2.0, BSD, Zlib, ISC; OFL for fonts), enforced by `deny.toml`. libmpv and FFmpeg are never linked at build time: they are loaded at runtime as separate, replaceable LGPL libraries, shipped with their licence and source offer. Bundling a GPL build of them is an owner decision.
 - **Test media:** only files we generate ourselves (FFmpeg test sources) or with a recorded free licence, kept outside Git. Never commit media.

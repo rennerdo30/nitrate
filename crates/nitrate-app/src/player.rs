@@ -4,6 +4,7 @@
 
 use crate::Options;
 use crate::d3d::{Presenter, Started};
+use crate::update;
 use nitrate_mpv::{EndReason, Event, Format, Libmpv, Mpv, Value};
 use nitrate_ui::{Fonts, Layout, State, Target, View};
 use std::sync::Arc;
@@ -25,9 +26,10 @@ const MEDIA_EXTENSIONS: &[&str] = &[
     "flac", "m4a", "ogg", "opus", "wav",
 ];
 
-#[derive(Debug, Clone, Copy)]
 enum UserEvent {
     MpvWakeup,
+    UpdateChecked(Result<update::Outcome, String>),
+    UpdateStarted(Result<(), String>),
 }
 
 // Observed property ids.
@@ -57,6 +59,8 @@ struct App {
     first_frame: Option<Duration>,
     smoke_until: Option<Instant>,
     finished: bool,
+    proxy: EventLoopProxy<UserEvent>,
+    update: Option<nitrate_update::Candidate>,
 }
 
 pub fn run(options: Options) -> Result<(), String> {
@@ -99,8 +103,9 @@ pub fn run(options: Options) -> Result<(), String> {
 
     let event_loop = EventLoop::<UserEvent>::with_user_event().build().map_err(|e| e.to_string())?;
     let proxy: EventLoopProxy<UserEvent> = event_loop.create_proxy();
+    let wake = proxy.clone();
     mpv.set_wakeup_callback(move || {
-        let _ = proxy.send_event(UserEvent::MpvWakeup);
+        let _ = wake.send_event(UserEvent::MpvWakeup);
     });
 
     let remote = is_remote_session();
@@ -122,6 +127,8 @@ pub fn run(options: Options) -> Result<(), String> {
         first_frame: None,
         smoke_until,
         finished: false,
+        proxy,
+        update: None,
     };
     event_loop.run_app(&mut app).map_err(|e| e.to_string())
 }
@@ -156,6 +163,17 @@ impl App {
         if let Some(path) = picked {
             self.open(&path.to_string_lossy());
         }
+    }
+
+    /// Ctrl+Shift+U: downloads and verifies the update on a worker, then
+    /// starts the setup and closes. Only ever on this explicit request.
+    fn install_update(&mut self) {
+        let Some(c) = self.update.clone() else { return };
+        self.state.notice = Some(format!("Downloading Nitrate {}…", c.version));
+        let proxy = self.proxy.clone();
+        update::spawn_install(c, move |r| {
+            let _ = proxy.send_event(UserEvent::UpdateStarted(r));
+        });
     }
 
     fn toggle_fullscreen(&mut self) {
@@ -331,12 +349,37 @@ impl ApplicationHandler<UserEvent> for App {
         if let Some(file) = self.options.file.clone() {
             self.open(&file);
         }
+        if self.smoke_until.is_none() {
+            let proxy = self.proxy.clone();
+            let policy = update::Policy {
+                enabled: std::env::var_os("NITRATE_NO_UPDATE").is_none(),
+                channel: std::env::var("NITRATE_UPDATE_CHANNEL").ok(),
+                force: false,
+            };
+            update::spawn_check(policy, move |r| {
+                let _ = proxy.send_event(UserEvent::UpdateChecked(r));
+            });
+        }
         self.refresh();
     }
 
     fn user_event(&mut self, event_loop: &ActiveEventLoop, event: UserEvent) {
         match event {
             UserEvent::MpvWakeup => self.drain_mpv(event_loop),
+            UserEvent::UpdateChecked(result) => match result {
+                Ok(update::Outcome::Found(c)) => {
+                    self.state.notice = Some(update::notice(&c.version));
+                    self.update = Some(c);
+                }
+                Ok(update::Outcome::Off(why)) => self.state.notice = Some(why),
+                Ok(_) => {}
+                Err(e) => eprintln!("nitrate: update check failed: {e}"),
+            },
+            UserEvent::UpdateStarted(result) => match result {
+                // The setup waits for Nitrate to close, installs and starts it again.
+                Ok(()) => event_loop.exit(),
+                Err(e) => self.state.notice = Some(e),
+            },
         }
     }
 
@@ -435,6 +478,7 @@ impl ApplicationHandler<UserEvent> for App {
                     Key::Named(NamedKey::Enter) if self.modifiers.alt_key() => self.toggle_fullscreen(),
                     Key::Character(c) => match (c.to_ascii_lowercase().as_str(), ctrl) {
                         ("o", true) => self.open_dialog(),
+                        ("u", true) if shift => self.install_update(),
                         ("f", false) => self.toggle_fullscreen(),
                         ("m", false) => self.command(&["cycle", "mute"]),
                         ("k", false) => self.command(&["cycle", "pause"]),

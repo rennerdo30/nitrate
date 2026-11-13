@@ -6,6 +6,8 @@
 mod d3d;
 #[cfg(windows)]
 mod player;
+#[cfg(windows)]
+mod update;
 
 use std::process::ExitCode;
 
@@ -26,7 +28,7 @@ Options:
 
 Keys: Space or K play/pause, Left/Right seek 5 s (Shift: 1 s), J/L 10 s,
 Up/Down volume, M mute, F or double click fullscreen, Esc leave fullscreen,
-. and , frame step, Ctrl+O open.";
+. and , frame step, Ctrl+O open, Ctrl+Shift+U install an available update.";
 
 /// Options for a player run.
 #[derive(Debug, Default, Clone, PartialEq)]

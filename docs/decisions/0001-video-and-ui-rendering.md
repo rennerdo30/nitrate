@@ -23,7 +23,7 @@ Nitrate draws its controls on top of mpv's video in one window, must be at least
 
 ## Open
 
-- macOS (OpenGL via the render API, as IINA, or Metal later) and Linux (OpenGL via EGL; Vulkan if the render API gets it).
+- macOS (OpenGL via the render API, or Metal later) and Linux (OpenGL via EGL; Vulkan if the render API gets it).
 - Spike gates still to record (docs/SPEC.md §4): 4K60 HDR, RDP with and without GPU, CPU/GPU against plain mpv.
 
 ## UI toolkit

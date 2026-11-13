@@ -22,7 +22,19 @@ One version for the whole workspace: `version` under `[workspace.package]` in `C
    - writes one `SHA256SUMS.txt` over all packages and creates a **draft** release with the changelog section as notes. Rerunning it with the same tag refreshes a draft and never touches a published release.
 4. **The owner reviews the draft and publishes it.**
 
-Packages do not contain libmpv yet; bundling it (with its licence and source offer) comes with the spike (`docs/SPEC.md` §5).
+**What the Windows packages contain:** `nitrate.exe` (with its icon), `libmpv-2.dll` (the pinned LGPL build from `scripts/fetch-libmpv.ps1`, checksum-verified), `LICENSE.txt`, `THIRD-PARTY-NOTICES.txt` (Rust crates), `libmpv-NOTICE.txt` (what the DLL is, its licence and where its source is) and `LGPL-2.1.txt`. A new libmpv build means: update the tag, file name and SHA-256 in `fetch-libmpv.ps1` and the commit and links in `licenses/libmpv-NOTICE.txt` together.
+
+**File types:** the setup registers Nitrate per user for the media types in `installer/nitrate.nsi` (`TYPES`): "Open with" entries, a `Nitrate.Media` ProgID and a Default apps entry. It never takes over a default silently; the finish page offers to open Settings > Default apps. Uninstall removes only Nitrate's own values and keeps other apps' entries (the CI test checks this).
+
+## Updates in the app
+
+- An installed release build (in `%LOCALAPPDATA%\Programs\nitrate`) checks GitHub releases once after start, at most once a day, on a worker thread. Development builds, `--smoke`/`--snapshot` runs and `NITRATE_NO_UPDATE` never check.
+- A found update shows a notice in the top right. **Ctrl+Shift+U** installs it: Nitrate downloads the setup and `SHA256SUMS.txt` into a fresh temporary folder, checks the SHA-256, starts the setup with `/S /UPDATE` and closes; the setup waits for it, installs and starts Nitrate again. Nothing installs without that key press.
+- **Channels:** a prerelease build follows beta (newest published release, prerelease or stable), a stable build follows stable; `NITRATE_UPDATE_CHANNEL=stable|beta` overrides.
+- Only GitHub's API for `rennerdo30/nitrate` and its release downloads are fetched, over HTTPS (WinHTTP, so system proxy settings apply), size-capped, 60 s timeouts.
+- The checksum protects integrity, not authenticity (it comes from the same release). The setup is not code-signed yet, so SmartScreen warns on first run; signing is a separate owner decision.
+
+The setup's file name `nitrate-<version>-setup.exe` and `SHA256SUMS.txt` are the contract with the updater; keep both names.
 
 ## Building the packages locally
 

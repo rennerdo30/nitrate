@@ -1,4 +1,5 @@
-# Builds the Windows packages into artifacts/installer:
+# Builds the Windows packages into artifacts/installer (with libmpv-2.dll and
+# its LGPL notice):
 #   nitrate-<version>-setup.exe, nitrate-<version>-windows-x64.zip, SHA256SUMS.txt
 # Build only: never installs nitrate, never runs the setup, never changes PATH.
 #
@@ -12,7 +13,10 @@
 [CmdletBinding()]
 param(
     [string]$MakeNsis = $(if ($env:NITRATE_MAKENSIS) { $env:NITRATE_MAKENSIS } else { 'E:/Development/_cache/tools/nsis-3.13/makensis.exe' }),
-    [string]$BinDir
+    [string]$BinDir,
+    # libmpv-2.dll to ship; default: the pinned build (fetch-libmpv.ps1).
+    [string]$LibMpv = $env:NITRATE_LIBMPV,
+    [string]$LibMpvCache = $(if ($env:RUNNER_TEMP) { Join-Path $env:RUNNER_TEMP 'libmpv' } else { 'E:/Development/_cache/tools/libmpv' })
 )
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
@@ -66,6 +70,11 @@ $stage = Join-Path $out ('stage-' + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $stage | Out-Null
 Copy-Item -LiteralPath $exe -Destination $stage
 Copy-Item -LiteralPath (Join-Path $root 'LICENSE') -Destination (Join-Path $stage 'LICENSE.txt')
+if (!$LibMpv) { $LibMpv = & (Join-Path $PSScriptRoot 'fetch-libmpv.ps1') -Destination $LibMpvCache }
+if (!(Test-Path -LiteralPath $LibMpv -PathType Leaf)) { throw "libmpv-2.dll not found at '$LibMpv'" }
+Copy-Item -LiteralPath $LibMpv -Destination (Join-Path $stage 'libmpv-2.dll')
+Copy-Item -LiteralPath (Join-Path $root 'licenses/libmpv-NOTICE.txt') -Destination $stage
+Copy-Item -LiteralPath (Join-Path $root 'licenses/LGPL-2.1.txt') -Destination $stage
 $notices = Join-Path $stage 'THIRD-PARTY-NOTICES.txt'
 if (Get-Command cargo-about -ErrorAction SilentlyContinue) {
     Invoke-Bounded $cargo @('about', 'generate', '-o', $notices, (Join-Path $root 'about.hbs')) 600 | Out-Null
@@ -86,6 +95,6 @@ $lines = foreach ($f in @($setup, $zip)) {
     Write-Host ('{0:N0} bytes  {1}' -f (Get-Item -LiteralPath $f).Length, $f)
     "$h  $(Split-Path -Leaf $f)"
 }
-# sha256sum format with LF endings, the contract with the planned in-app updater.
+# sha256sum format with LF endings, the contract with the in-app updater.
 [IO.File]::WriteAllText((Join-Path $out 'SHA256SUMS.txt'), (($lines -join "`n") + "`n"))
 Write-Host "Wrote $(Join-Path $out 'SHA256SUMS.txt')"

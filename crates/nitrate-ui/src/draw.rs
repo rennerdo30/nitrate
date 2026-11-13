@@ -105,6 +105,11 @@ pub fn paint(view: &View, fonts: &Fonts) -> Vec<Layer> {
             layers.push(l);
         }
     }
+    if view.controls
+        && let Some(l) = notice(view, fonts)
+    {
+        layers.push(l);
+    }
     if let Some(l) = centre(view, fonts) {
         layers.push(l);
     }
@@ -402,4 +407,21 @@ pub fn mark_rgba(size: u32) -> Vec<u8> {
             [c.red(), c.green(), c.blue(), c.alpha()]
         })
         .collect()
+}
+
+/// The update notice: a dark pill with an amber dot, top right.
+fn notice(v: &View, fonts: &Fonts) -> Option<Layer> {
+    let text = v.notice.as_deref()?;
+    let l = &v.layout;
+    let s = l.scale;
+    let px = 13.0 * s;
+    let w = (fonts.measure(text, px, Weight::Semibold) + 44.0 * s).min(l.width as f32);
+    let h = 32.0 * s;
+    let mut p = new_pixmap(w, h)?;
+    let bg = if v.remote { Color::from_rgba8(30, 22, 18, 255) } else { Color::from_rgba8(20, 14, 12, 230) };
+    fill(&mut p, rrect(0.0, 0.0, w, h, h / 2.0), &solid(bg));
+    fill(&mut p, PathBuilder::from_circle(16.0 * s, h / 2.0, 4.0 * s), &solid(rgba(AMBER, 1.0)));
+    let width = p.width();
+    fonts.draw(p.data_mut(), width, text, 28.0 * s, h / 2.0 + 4.5 * s, px, Weight::Semibold, WHITE, 0.95);
+    Some(layer(p, l.width as f32 - w - 16.0 * s, 16.0 * s))
 }
