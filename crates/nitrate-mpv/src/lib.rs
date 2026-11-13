@@ -39,7 +39,10 @@ pub struct ApiVersion {
 
 impl ApiVersion {
     /// Decodes `mpv_client_api_version()`: `major << 16 | minor`.
-    pub fn from_raw(raw: u64) -> Self {
+    /// Generic because C's `unsigned long` is 32 bits on Windows and 64 bits
+    /// on macOS and Linux.
+    pub fn from_raw(raw: impl Into<u64>) -> Self {
+        let raw: u64 = raw.into();
         Self { major: ((raw >> 16) & 0xffff) as u32, minor: (raw & 0xffff) as u32 }
     }
 }
@@ -138,7 +141,7 @@ impl Libmpv {
                 .map_err(|e| LoadError::MissingSymbol { path: path.clone(), symbol: SYMBOL, error: e.to_string() })?;
             function()
         };
-        let api_version = ApiVersion::from_raw(u64::from(raw));
+        let api_version = ApiVersion::from_raw(raw);
         if api_version.major != REQUIRED_API_MAJOR {
             return Err(LoadError::WrongVersion { path, found: api_version });
         }
@@ -163,7 +166,7 @@ mod tests {
 
     #[test]
     fn decodes_the_client_api_version() {
-        let v = ApiVersion::from_raw((2 << 16) | 5);
+        let v = ApiVersion::from_raw((2u64 << 16) | 5);
         assert_eq!(v, ApiVersion { major: 2, minor: 5 });
         assert_eq!(v.to_string(), "2.5");
     }
