@@ -70,6 +70,9 @@ jobs:
 
   unix:
     name: ${{ matrix.name }} archive
+    # Off until macOS and Linux play video (docs/SPEC.md); CI still builds and
+    # tests them on every push. Re-enable here and in `needs` below.
+    if: ${{ false }}
     strategy:
       fail-fast: false
       matrix:
@@ -112,7 +115,7 @@ jobs:
 
   draft:
     name: draft release (owner publishes)
-    needs: [windows, unix]
+    needs: [windows]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
