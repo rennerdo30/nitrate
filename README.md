@@ -10,7 +10,7 @@ Built in Rust on libmpv. Fast locally, and fast over remote desktop.</p>
 
 ---
 
-> **Status: early development.** The repository, CI and installer are set up; playback arrives with the rendering spike. Nothing here is ready to use yet.
+> **Status: early development (Windows MVP).** Nitrate plays files on Windows with hardware decoding and its own controls. macOS and Linux build but don't play yet. Not ready for everyday use.
 
 ## Goals
 
@@ -24,10 +24,12 @@ The full plan, speed budgets and the open rendering decision are in [`docs/SPEC.
 
 ## Building
 
-```sh
-cargo build --release
-cargo run -- --mpv-info    # shows which libmpv Nitrate finds
+```bat
+scripts\run.bat path\to\video.mkv          :: Windows: build, fetch libmpv once, play
+scripts\run.bat -Release path\to\video.mkv :: optimized build
 ```
+
+**Keys:** Space or K play/pause, Left/Right seek 5 s (Shift: 1 s), J/L 10 s, Up/Down volume, M mute, F or double click fullscreen, Esc leave fullscreen, `.` and `,` frame step, Ctrl+O open. Drop a file on the window to play it.
 
 Nitrate loads libmpv at runtime, so building needs no mpv headers. Details: [`docs/BUILD.md`](docs/BUILD.md).
 

@@ -56,4 +56,4 @@ These hold for every change. A change that breaks one of them is a defect, even 
 - `docs/BUILD.md`: build settings, sccache, linker.
 - `docs/RELEASING.md`: releases (drafts only, the owner publishes). Never run `scripts/test-installer.ps1` or a built setup on the owner PC; they run on CI runners only.
 - `assets/logo/`: the SVG logo and its derived files.
-- `scripts/`: `check.bat`/`check.sh` (the CI checks), `package.bat` (Windows packages, build only), `make-icon.ps1`.
+- `scripts/`: owner test scripts, batch files on Windows: `run.bat` (build, fetch libmpv, start; `.sh` twin), `check.bat`/`check.sh` (the CI checks), `package.bat` (Windows packages, build only), `make-icon.ps1`, `fetch-libmpv.ps1` (pinned, checksum-verified). Agents never run `run.bat` (visible window, sound); they use `nitrate --mute --smoke`/`--snapshot`, which stay offscreen.

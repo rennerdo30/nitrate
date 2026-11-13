@@ -1,31 +1,31 @@
 # 0001: Video and UI rendering path
 
-Status: **proposed**. The M0 spike (NT-2) decides it with measurements; until then nothing here is final.
+Status: **decided for Windows** (2026-11-14, MVP); macOS and Linux still open.
 
 ## Problem
 
-Nitrate draws its controls on top of mpv's video in one window, must be at least as fast as plain mpv, and must work over remote desktop. Three facts shape the choice:
+Nitrate draws its controls on top of mpv's video in one window, must be at least as fast as plain mpv, and must work over remote desktop.
 
-1. **libmpv's embedding API.** mpv's render API (`libmpv/render.h`) lets an application draw the video into its own surface. As of 2026-11-14 we found only OpenGL and a slow software renderer there; Vulkan and D3D11 are used by standalone mpv but not offered to embedders. The spike re-checks the current headers and changelog before deciding.
-2. **Remote desktop.** In Windows RDP sessions without the GPU policy, OpenGL is often a software fallback and Vulkan is usually missing; D3D11 keeps working (on the GPU or on WARP). The owner uses remote desktop, so this decides the Windows path.
-3. **Window embedding.** The alternative to the render API, giving mpv a child window (`--wid`), lets mpv use D3D11 or Vulkan itself, but then our controls cannot simply draw over the video (separate windows), and `--wid` does not exist on Wayland.
+## Facts
 
-## Options per platform
+1. **libmpv's render API has a Direct3D 11 backend.** mpv's `render.h` lists D3D11 (`MPV_RENDER_API_TYPE_D3D11`, `render_d3d11.h`, params 21 and 22), OpenGL and software. Checked in the headers and source of mpv `fe753a7824` (2026-11-13). mpv renders a frame into an `ID3D11Texture2D` we own, on our device; d3d11va decodes on the same device.
+2. **Remote desktop.** In Windows RDP sessions OpenGL is often a slow software fallback and Vulkan usually missing; D3D11 keeps working, on the GPU or on WARP.
+3. **Window embedding (`--wid`)** puts mpv in a child window our controls cannot draw over, and does not exist on Wayland.
 
-| Platform | A: render API into our surface | B: mpv draws itself |
-|---|---|---|
-| Windows | OpenGL through a D3D11 interop; weak over RDP | `--wid` child with mpv's D3D11 output; controls in a composited layer on top (DirectComposition or a layered window). **Front-runner.** |
-| Linux | OpenGL via EGL, works on Wayland and X11. **Front-runner** (Vulkan if the render API offers it) | `--wid` only on X11 |
-| macOS | OpenGL (deprecated, still fast; what IINA uses). **Front-runner** | no clean embedding |
+## Decision (Windows)
 
-The app keeps one interface for "the video surface" so each platform can use its own path while the UI, input and state code stay shared.
+- One window (winit). A render thread owns a D3D11 device (hardware with video support, then hardware, then WARP) and a flip-model swap chain (`FLIP_DISCARD`, 2 buffers, `B8G8R8A8_UNORM`).
+- mpv renders each frame straight into the back buffer (`mpv_render_context_render` with `MPV_RENDER_PARAM_D3D11_FBO`). Hardware decoding: `hwdec=auto-safe` (d3d11va on our device, zero-copy).
+- The controls are CPU-drawn (tiny-skia, fontdue) into small premultiplied RGBA layers, uploaded only when they change, and composited over the video with one textured quad each.
+- The render thread wakes only on: an mpv frame, a layer change, a resize, a snapshot. Paused and idle: no presents.
+
+**Measured** (owner PC, AMD Radeon RX 9070 XT, 1080p30 H.264, release build, `--smoke 8`): d3d11va active, 0 dropped and 0 delayed frames, presents equal to video frames plus layer changes, 3 presents in 3 s idle.
+
+## Open
+
+- macOS (OpenGL via the render API, as IINA, or Metal later) and Linux (OpenGL via EGL; Vulkan if the render API gets it).
+- Spike gates still to record (docs/SPEC.md §4): 4K60 HDR, RDP with and without GPU, CPU/GPU against plain mpv.
 
 ## UI toolkit
 
-Rust dependencies must be permissively licensed (AGENTS.md). That rules out toolkits licensed under GPL or a royalty-free/commercial split, however good they are. Candidates the spike compares:
-- `winit` for windows and input with our own GPU-drawn overlay (for example `wgpu`, MIT/Apache) on the same surface as the video;
-- an own damage-tracked renderer, as ffwd and Kwil use for their remote-desktop-first UIs (`E:/Development/kwil/docs/decisions/0001-renderer.md`).
-
-## Decision criteria
-
-The spike gates in `docs/SPEC.md` §4, in this order: works over RDP, zero dropped frames, CPU/GPU within 5 % of plain mpv, idle at 0 presents, then code size and build time.
+Rust dependencies must be permissively licensed (AGENTS.md), so toolkits under GPL or a royalty-free/commercial split are out. The controls are drawn by `nitrate-ui` (tiny-skia BSD-3-Clause, fontdue MIT/Apache/Zlib), as ffwd and Kwil draw their own UIs.

@@ -7,7 +7,11 @@ cargo run -- --mpv-info      # which libmpv Nitrate finds
 
 The toolchain is pinned in `rust-toolchain.toml` (Rust 1.100.0); `rustup` installs it automatically.
 
-**libmpv** is loaded at runtime, so building needs no mpv headers or libraries. To run playback (from the spike on), put `libmpv-2.dll` next to `nitrate.exe` on Windows, or install libmpv from your package manager (`libmpv2` on Debian and Ubuntu, `mpv-libs` on Fedora, `mpv` from Homebrew on macOS).
+**libmpv** is loaded at runtime, so building needs no mpv headers or libraries. On Windows, `scripts\run.bat [FILE]` builds Nitrate, puts `libmpv-2.dll` next to `nitrate.exe` and starts it. The DLL comes from `NITRATE_LIBMPV` if set, otherwise from the pinned LGPL build that `scripts\fetch-libmpv.ps1` downloads once (checksum-verified) to `E:/Development/_cache/tools/libmpv/`. It needs mpv with the D3D11 render API (mpv `fe753a7824`, 2026-11-13, or newer). Playback on macOS and Linux comes later.
+
+**Agent and CI checks without a window on screen:**
+- `nitrate --mute --smoke 8 FILE` plays offscreen for 8 s and prints adapter, hwdec, first-frame time, frames, presents and dropped frames.
+- `nitrate --mute --snapshot shot.png [FILE]` saves the composited frame (video plus controls).
 
 ## Fastest iteration
 

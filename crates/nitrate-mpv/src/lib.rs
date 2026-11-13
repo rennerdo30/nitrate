@@ -86,9 +86,17 @@ impl fmt::Display for LoadError {
 
 impl std::error::Error for LoadError {}
 
+mod client;
+mod ffi;
+mod render;
+
+pub use client::{EndReason, Error, Event, Format, Mpv, Value};
+pub use render::RenderContext;
+
 /// A loaded libmpv.
 pub struct Libmpv {
-    // Kept alive for as long as any function pointer taken from it is used.
+    pub(crate) api: ffi::Api,
+    // Kept alive for as long as any function pointer in `api` is used.
     _library: libloading::Library,
     path: String,
     api_version: ApiVersion,
@@ -145,7 +153,13 @@ impl Libmpv {
         if api_version.major != REQUIRED_API_MAJOR {
             return Err(LoadError::WrongVersion { path, found: api_version });
         }
-        Ok(Self { _library: library, path, api_version })
+        // SAFETY: the library is libmpv with client API 2.x (checked above).
+        let api = unsafe { ffi::Api::load(&library) }.map_err(|(symbol, error)| LoadError::MissingSymbol {
+            path: path.clone(),
+            symbol,
+            error,
+        })?;
+        Ok(Self { api, _library: library, path, api_version })
     }
 
     /// Where the library was loaded from (a full path, or the bare name the

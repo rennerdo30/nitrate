@@ -14,3 +14,18 @@ path = "src/main.rs"
 
 [dependencies]
 nitrate-mpv = { path = "../nitrate-mpv" }
+nitrate-ui = { path = "../nitrate-ui" }
+winit = "0.30.13"
+
+[target.'cfg(windows)'.dependencies]
+png = "0.18.1"
+rfd = { version = "0.18.0", default-features = false }
+windows = { version = "0.62.2", features = [
+    "Win32_Foundation",
+    "Win32_Graphics_Direct3D",
+    "Win32_Graphics_Direct3D_Fxc",
+    "Win32_Graphics_Direct3D11",
+    "Win32_Graphics_Dxgi",
+    "Win32_Graphics_Dxgi_Common",
+    "Win32_UI_WindowsAndMessaging",
+] }
