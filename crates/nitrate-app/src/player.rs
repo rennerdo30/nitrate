@@ -87,6 +87,12 @@ pub fn run(options: Options) -> Result<(), String> {
     if options.mute {
         mpv.set_option("mute", "yes").map_err(|e| e.to_string())?;
     }
+    if options.pause {
+        mpv.set_option("pause", "yes").map_err(|e| e.to_string())?;
+    }
+    if let Some(start) = options.start {
+        mpv.set_option("start", &format!("{start}")).map_err(|e| e.to_string())?;
+    }
     mpv.initialize().map_err(|e| e.to_string())?;
     for (id, name, format) in [
         (P_TIME, "time-pos", Format::Double),
@@ -279,8 +285,12 @@ impl App {
             return;
         }
         if let Some(path) = self.options.snapshot.clone() {
-            // Show the controls in the shot.
+            // Show the controls in the shot, and the hover preview if asked.
             self.activity();
+            if let (Some(f), Some(layout)) = (self.options.hover, self.layout()) {
+                let t = layout.timeline;
+                self.state.pointer = Some((t.x + t.w * f as f32, t.y + t.h / 2.0));
+            }
             self.refresh();
             if let Some(p) = &self.presenter
                 && let Err(e) = p.snapshot(path.into())

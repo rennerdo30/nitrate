@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <title>Nitrate</title>
+  <!-- A play button made of nitrate film: a perforated strip cut from the
+       frame, burning from amber to crimson. -->
+  <defs>
+    <radialGradient id="bg" cx="0.42" cy="0.38" r="0.85">
+      <stop offset="0" stop-color="#2A1610"/>
+      <stop offset="1" stop-color="#0E0908"/>
+    </radialGradient>
+    <linearGradient id="burn" x1="0.15" y1="0.05" x2="0.85" y2="0.95">
+      <stop offset="0" stop-color="#FFD25A"/>
+      <stop offset="0.45" stop-color="#FF7A1F"/>
+      <stop offset="1" stop-color="#E5173F"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="22"/>
+    </filter>
+    <mask id="cut">
+      <rect width="512" height="512" fill="#fff"/>
+      <!-- The cut between strip and frame, through the whole mark. -->
+      <rect x="190" y="60" width="14" height="392" fill="#000"/>
+      <!-- Perforations. -->
+      <g fill="#000">
+        <rect x="143" y="168" width="32" height="24" rx="6"/>
+        <rect x="143" y="220" width="32" height="24" rx="6"/>
+        <rect x="143" y="272" width="32" height="24" rx="6"/>
+        <rect x="143" y="324" width="32" height="24" rx="6"/>
+      </g>
+    </mask>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#bg)"/>
+  <g transform="translate(14 0)">
+    <!-- Heat glow behind the mark. -->
+    <path d="M150 128 L150 384 L392 256 Z" fill="#FF5A1F" opacity="0.5" stroke="#FF5A1F" stroke-width="44" stroke-linejoin="round" filter="url(#glow)"/>
+    <!-- The play triangle, corners rounded by a matching stroke. -->
+    <path d="M150 128 L150 384 L392 256 Z" fill="url(#burn)" stroke="url(#burn)" stroke-width="44" stroke-linejoin="round" mask="url(#cut)"/>
+  </g>
+</svg>

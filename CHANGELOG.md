@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- **Website** at nitrate.renner.dev (`website/`, deployed by hand through the Website Pages workflow) and a README with screenshots, install and usage.
+- `--start SECS` starts playback at a position, `--pause` opens a file paused, and `--hover F` points a `--snapshot` at the timeline.
+- `scripts/screenshots.ps1` retakes the screenshots from the real player with Nitrate's own demo footage (`scripts/demo-footage.py`).
+
 ## 0.1.0-beta.1
 
 The first beta: a fast media player for Windows, built on libmpv. macOS and Linux follow.

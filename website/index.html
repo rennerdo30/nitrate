@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nitrate: a fast, quiet media player</title>
+  <meta name="description" content="Nitrate is a free, open-source media player built in Rust on libmpv. Hardware decoding straight to the screen, controls that get out of the way, and a fast path for remote desktop sessions.">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#0e0908">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; connect-src https://api.github.com; base-uri 'none'; form-action 'none'">
+  <link rel="canonical" href="https://nitrate.renner.dev/">
+  <link rel="icon" href="assets/nitrate-mark.svg" type="image/svg+xml">
+  <link rel="manifest" href="site.webmanifest">
+  <meta property="og:title" content="Nitrate">
+  <meta property="og:description" content="A fast, quiet media player. Press play; everything else gets out of the way.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nitrate.renner.dev/">
+  <meta property="og:image" content="https://nitrate.renner.dev/assets/shots/playing.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="style.css">
+  <script src="releases.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="top">
+    <a class="brand" href="#top" aria-label="Nitrate home">
+      <img src="assets/nitrate-mark.svg" width="30" height="30" alt="">
+      <span>Nitrate</span>
+    </a>
+    <nav aria-label="Sections">
+      <a href="#features">Features</a>
+      <a href="#speed">Speed</a>
+      <a href="#keys">Keys</a>
+      <a href="#download">Download</a>
+      <a class="nav-gh" href="https://github.com/rennerdo30/nitrate">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="kicker"><span class="pill">Beta</span> Free and open source</p>
+        <h1 id="hero-title">Press play. <em>Everything else gets out of the way.</em></h1>
+        <p class="lede">Nitrate is a media player built in Rust on libmpv. Video goes from the hardware decoder straight to the screen, the controls fade when you watch, and it stays fast over remote desktop.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#download" data-release="setup">Download for Windows</a>
+          <a class="btn btn-ghost" href="https://github.com/rennerdo30/nitrate">View the source</a>
+        </div>
+        <p class="works">Windows 10 and 11, 64-bit. macOS and Linux are on the way.</p>
+      </div>
+      <figure class="window">
+        <div class="window-bar" aria-hidden="true"><span></span><span></span><span></span><b>Nitrate</b></div>
+        <img src="assets/shots/playing.webp" width="1600" height="900" alt="Nitrate playing a film: the title at the top left, and at the bottom a glowing timeline with a hover time bubble, the play button, the time, volume and fullscreen.">
+      </figure>
+    </section>
+
+    <section class="band" id="features" aria-labelledby="features-title">
+      <div class="band-head">
+        <h2 id="features-title">Made to watch, not to look at</h2>
+        <p class="intro">No skins, no sidebars, no ribbon. The film fills the window; the controls appear when you move the mouse and fade when you stop.</p>
+      </div>
+      <ul class="features">
+        <li>
+          <h3>Zero-copy hardware decoding</h3>
+          <p>Frames are decoded on the GPU and drawn on the same device. They never take a detour through main memory, so 4K stays smooth and the fans stay quiet.</p>
+        </li>
+        <li>
+          <h3>Plays almost anything</h3>
+          <p>Decoding, formats, subtitles and audio come from libmpv, a proven open-source playback engine. Nitrate is the fast, modern shell around it.</p>
+        </li>
+        <li>
+          <h3>Fast over remote desktop</h3>
+          <p>Nitrate notices a remote session and switches to static, animation-free chrome, so the connection only carries the video. Without a GPU it falls back to a software renderer and keeps playing.</p>
+        </li>
+        <li>
+          <h3>Draws nothing when nothing changes</h3>
+          <p>Nitrate has no frame loop of its own. Playing, it draws once per video frame and repaints its controls only when they change; paused and untouched, it draws nothing at all.</p>
+        </li>
+        <li>
+          <h3>Updates on your terms</h3>
+          <p>Installed copies check for a new release once a day. A small notice appears; nothing installs until you press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>U</kbd>, and every download is checked against its published SHA-256.</p>
+        </li>
+        <li>
+          <h3>Polite with your files</h3>
+          <p>The setup needs no admin rights and adds Nitrate to "Open with" for 21 video and audio types. It never takes over a default behind your back; uninstall removes only its own entries.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="band gallery" aria-label="More screenshots">
+      <figure>
+        <img src="assets/shots/paused.webp" width="1600" height="900" loading="lazy" alt="Nitrate paused: the controls stay visible with the play button, time 3:30 of 10:01 and the timeline.">
+        <figcaption>Paused, the controls stay. Playing, they fade after a moment.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/shots/idle.webp" width="1600" height="900" loading="lazy" alt="Nitrate with no file open: the Nitrate mark and the words Drop a video here, or press Ctrl+O to open a file.">
+        <figcaption>Drop a file on the window, open one from Explorer, or press <kbd>Ctrl</kbd>+<kbd>O</kbd>.</figcaption>
+      </figure>
+    </section>
+
+    <section class="band speed" id="speed" aria-labelledby="speed-title">
+      <div class="band-head">
+        <h2 id="speed-title">Speed is the first feature</h2>
+        <p class="intro">Every rule in Nitrate's code puts the picture first: video never waits for the interface, the interface never waits for the disk, and input answers in the next frame.</p>
+      </div>
+      <div class="stats">
+        <div><strong>1.3 MB</strong><span>the player itself, before libmpv</span></div>
+        <div><strong>0</strong><span>dropped frames in a 1080p smoke run with hardware decoding</span></div>
+        <div><strong>&lt; 0.5 s</strong><span>from start to the first video frame</span></div>
+        <div><strong>D3D11</strong><span>one native path that also works in remote sessions</span></div>
+      </div>
+      <p class="fine">Measured on the 0.1.0 beta on a desktop test PC with a current discrete GPU, playing a 1080p30 H.264 file. Nitrate's benchmarks against plain mpv on the same machine are next; numbers appear here when they are measured, not before.</p>
+    </section>
+
+    <section class="band" id="keys" aria-labelledby="keys-title">
+      <div class="band-head">
+        <h2 id="keys-title">Keys you already know</h2>
+      </div>
+      <dl class="keys">
+        <div><dt><kbd>Space</kbd> <kbd>K</kbd></dt><dd>Play or pause</dd></div>
+        <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Seek 5 s (with <kbd>Shift</kbd>: 1 s)</dd></div>
+        <div><dt><kbd>J</kbd> <kbd>L</kbd></dt><dd>Seek 10 s</dd></div>
+        <div><dt><kbd>↑</kbd> <kbd>↓</kbd></dt><dd>Volume (or the mouse wheel)</dd></div>
+        <div><dt><kbd>M</kbd></dt><dd>Mute</dd></div>
+        <div><dt><kbd>F</kbd>, double click</dt><dd>Fullscreen (<kbd>Esc</kbd> leaves)</dd></div>
+        <div><dt><kbd>.</kbd> <kbd>,</kbd></dt><dd>Step one frame</dd></div>
+        <div><dt><kbd>Ctrl</kbd>+<kbd>O</kbd></dt><dd>Open a file</dd></div>
+      </dl>
+    </section>
+
+    <section class="band download" id="download" aria-labelledby="download-title">
+      <div class="band-head">
+        <h2 id="download-title">Get Nitrate</h2>
+        <p class="intro">Nitrate is in beta: it plays files well, and playlists, track menus and settings are still to come. <span data-release="found" hidden>The newest release is <strong data-release="version"></strong>, from <span data-release="date"></span>.</span></p>
+      </div>
+      <div class="dl-grid">
+        <div class="dl">
+          <h3>Setup <span class="tag">recommended</span></h3>
+          <p>Installs for your user only, without admin rights, with a Start menu entry, "Open with" for media files and updates.</p>
+          <p class="cta"><a class="btn btn-primary" href="https://github.com/rennerdo30/nitrate/releases" data-release="setup">Download the setup</a></p>
+        </div>
+        <div class="dl">
+          <h3>Portable</h3>
+          <p>A zip with <code>nitrate.exe</code> and libmpv. Unpack anywhere and run; it changes nothing on your PC and doesn't update itself.</p>
+          <p class="cta"><a class="btn" href="https://github.com/rennerdo30/nitrate/releases" data-release="zip">Download the zip</a></p>
+        </div>
+      </div>
+      <p class="fine">The setup isn't code-signed yet, so Windows may warn on first run: choose <em>More info</em>, then <em>Run anyway</em>. Every file is listed with its SHA-256 in <a href="https://github.com/rennerdo30/nitrate/releases" data-release="sums">SHA256SUMS.txt</a>. Needs a 64-bit CPU with AVX2 (most PCs from 2015 on).</p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p><img src="assets/nitrate-mark.svg" width="20" height="20" alt=""> Nitrate, a project by <a href="https://github.com/rennerdo30">rennerdo30</a>. MIT licensed.</p>
+    <p><a href="https://github.com/rennerdo30/nitrate/blob/main/CHANGELOG.md">Changelog</a> <a href="privacy.html">Privacy</a> <a href="https://github.com/rennerdo30/nitrate/issues">Report an issue</a></p>
+    <p class="legal">Nitrate ships libmpv, a separate library under the GNU LGPL 2.1 or later, loaded at runtime and replaceable; its notice and licence come with every download. The film in the screenshots is Nitrate's own demo footage, rendered for these pages. Product names on this site are trademarks of their respective owners.</p>
+  </footer>
+</body>
+</html>

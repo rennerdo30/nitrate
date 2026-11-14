@@ -20,8 +20,11 @@ Usage: nitrate [OPTIONS] [FILE]
 
 Options:
   --mute           Start muted
+  --start <SECS>   Start playing at SECS seconds
+  --pause          Open the file paused
   --smoke <SECS>   Play offscreen for SECS seconds, print timings, then exit
   --snapshot <PNG> Offscreen run that saves the final frame with controls
+  --hover <F>      With --snapshot: point at the timeline at fraction F (0..1)
   --mpv-info       Show which libmpv Nitrate finds, then exit
   --version        Print the version, then exit
   --help           Print this help, then exit
@@ -37,6 +40,9 @@ pub struct Options {
     pub mute: bool,
     pub smoke: Option<f64>,
     pub snapshot: Option<String>,
+    pub start: Option<f64>,
+    pub pause: bool,
+    pub hover: Option<f64>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -64,6 +70,15 @@ fn parse(args: &[String]) -> Command {
             "--snapshot" => match it.next() {
                 Some(path) => options.snapshot = Some(path.clone()),
                 None => return Command::Bad("--snapshot needs a PNG path".into()),
+            },
+            "--start" => match it.next().and_then(|s| s.parse::<f64>().ok()).filter(|s| s.is_finite() && *s >= 0.0) {
+                Some(secs) => options.start = Some(secs),
+                None => return Command::Bad("--start needs a number of seconds".into()),
+            },
+            "--pause" => options.pause = true,
+            "--hover" => match it.next().and_then(|s| s.parse::<f64>().ok()).filter(|f| (0.0..=1.0).contains(f)) {
+                Some(f) => options.hover = Some(f),
+                None => return Command::Bad("--hover needs a fraction from 0 to 1".into()),
             },
             a if a.starts_with("--") => return Command::Bad(format!("Unknown option {a}")),
             a => options.file = Some(a.to_owned()),
@@ -164,6 +179,12 @@ mod tests {
             parse(&args(&["--snapshot", "s.png"])),
             Command::Play(Options { smoke: Some(3.0), snapshot: Some("s.png".into()), ..Options::default() })
         );
+        assert_eq!(
+            parse(&args(&["--start", "90.5", "--pause", "a.mkv"])),
+            Command::Play(Options { file: Some("a.mkv".into()), start: Some(90.5), pause: true, ..Options::default() })
+        );
+        assert!(matches!(parse(&args(&["--start", "-1"])), Command::Bad(_)));
+        assert!(matches!(parse(&args(&["--hover", "1.5"])), Command::Bad(_)));
         assert_eq!(parse(&args(&[])), Command::Play(Options::default()));
     }
 }
