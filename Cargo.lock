@@ -773,7 +773,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "nitrate"
+name = "nitrate-mpv"
+version = "0.1.0-beta.1"
+dependencies = [
+ "libloading 0.9.1",
+]
+
+[[package]]
+name = "nitrate-player"
 version = "0.1.0-beta.1"
 dependencies = [
  "embed-resource",
@@ -784,13 +791,6 @@ dependencies = [
  "rfd",
  "windows",
  "winit",
-]
-
-[[package]]
-name = "nitrate-mpv"
-version = "0.1.0-beta.1"
-dependencies = [
- "libloading 0.9.1",
 ]
 
 [[package]]

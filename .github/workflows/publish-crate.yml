@@ -1,0 +1,57 @@
+name: publish-crate
+
+# Uploads the four crates (nitrate-mpv, nitrate-ui, nitrate-update, then
+# nitrate-player) to crates.io. Manual only: the owner starts it from the
+# Actions tab, after the GitHub release for the same tag is published.
+# Needs the secret CARGO_REGISTRY_TOKEN in the "crates-io" environment, which
+# should require the owner's approval (docs/RELEASING.md). Only the last step
+# sees the token; every check before it runs without one.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag to publish (vX.Y.Z or vX.Y.Z-beta.N)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-crate
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    environment: crates-io
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Tag matches the workspace version and is on main
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          version=$(sed -n '/^\[workspace\.package\]/,/^\[/s/^version = "\(.*\)"$/\1/p' Cargo.toml)
+          if [ "$TAG" != "v$version" ]; then
+            echo "Tag $TAG does not match the workspace version $version" >&2
+            exit 1
+          fi
+          git merge-base --is-ancestor HEAD origin/main || { echo "$TAG is not on main" >&2; exit 1; }
+      # rust-toolchain.toml pins the toolchain; this installs it.
+      - run: rustup show active-toolchain
+      - name: Package check (no upload, no token)
+        run: scripts/check-crates.sh
+      - name: Publish to crates.io
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        # Verified above; publishes the crates in dependency order.
+        run: cargo publish --workspace --locked --no-verify

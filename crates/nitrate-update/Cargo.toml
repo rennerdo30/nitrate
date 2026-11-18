@@ -6,7 +6,16 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
-publish.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords = ["updater", "github-releases", "sha256", "self-update"]
+categories = ["development-tools"]
+include = [
+    "/src/**",
+    "/Cargo.toml",
+    "/README.md",
+    "/LICENSE",
+]
 
 [dependencies]
 serde_json = "1.0.154"

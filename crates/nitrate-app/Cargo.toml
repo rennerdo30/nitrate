@@ -1,24 +1,37 @@
 [package]
-name = "nitrate"
-description = "Nitrate: a fast media player for Windows, macOS and Linux."
+# The crates.io name; the program is still `nitrate` ([[bin]] below).
+name = "nitrate-player"
+description = "Nitrate, a fast, modern media player built on libmpv: hardware decoding straight to the screen, fast over remote desktop."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
-publish.workspace = true
+homepage.workspace = true
+readme = "README.md"
+keywords = ["media-player", "video", "mpv", "player", "d3d11"]
+categories = ["multimedia::video", "multimedia::audio"]
+include = [
+    "/src/**",
+    "/build.rs",
+    "/nitrate.rc",
+    "/nitrate.ico",
+    "/Cargo.toml",
+    "/README.md",
+    "/LICENSE",
+]
 
 [[bin]]
 name = "nitrate"
 path = "src/main.rs"
 
 [dependencies]
-nitrate-mpv = { path = "../nitrate-mpv" }
-nitrate-ui = { path = "../nitrate-ui" }
+nitrate-mpv.workspace = true
+nitrate-ui.workspace = true
 winit = "0.30.13"
 
 [target.'cfg(windows)'.dependencies]
-nitrate-update = { path = "../nitrate-update" }
+nitrate-update.workspace = true
 png = "0.18.1"
 rfd = { version = "0.18.0", default-features = false }
 windows = { version = "0.62.2", features = [

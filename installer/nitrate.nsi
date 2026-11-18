@@ -54,8 +54,8 @@ VIAddVersionKey "FileVersion" "${VERSION}"
 VIAddVersionKey "FileDescription" "Nitrate ${VERSION} setup"
 VIAddVersionKey "LegalCopyright" "MIT License"
 
-!define MUI_ICON "..\assets\logo\nitrate.ico"
-!define MUI_UNICON "..\assets\logo\nitrate.ico"
+!define MUI_ICON "..\crates\nitrate-app\nitrate.ico"
+!define MUI_UNICON "..\crates\nitrate-app\nitrate.ico"
 !define MUI_ABORTWARNING
 !define MUI_FINISHPAGE_RUN "$INSTDIR\nitrate.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "Start Nitrate"

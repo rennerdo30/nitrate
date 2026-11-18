@@ -48,7 +48,7 @@ jobs:
         with:
           tool: cargo-about@0.9.3
       - name: Release build
-        run: cargo build --release --locked -p nitrate
+        run: cargo build --release --locked -p nitrate-player
       - name: Package (pinned NSIS 3.13)
         shell: pwsh
         run: |
@@ -98,7 +98,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo build --release --locked -p nitrate
+          cargo build --release --locked -p nitrate-player
           v="${RELEASE_TAG#v}"
           dir="nitrate-$v-${{ matrix.suffix }}"
           target=$(cargo metadata --format-version 1 --no-deps | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')

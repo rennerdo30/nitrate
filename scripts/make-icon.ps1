@@ -1,4 +1,4 @@
-# Writes assets/logo/nitrate.ico (16, 24, 32, 48, 64 and 256 px, PNG entries)
+# Writes crates/nitrate-app/nitrate.ico (inside the crate, so crates.io builds embed it too) (16, 24, 32, 48, 64 and 256 px, PNG entries)
 # from assets/logo/nitrate-mark.svg, so the installer and window icon always
 # match the SVG logo. Windows only: renders the SVG once at 1024 px with
 # headless Microsoft Edge (bounded, its own PID only), then scales down.
@@ -6,7 +6,7 @@
 [CmdletBinding()]
 param(
     [string]$Svg = (Join-Path (Split-Path -Parent $PSScriptRoot) 'assets/logo/nitrate-mark.svg'),
-    [string]$Output = (Join-Path (Split-Path -Parent $PSScriptRoot) 'assets/logo/nitrate.ico'),
+    [string]$Output = (Join-Path (Split-Path -Parent $PSScriptRoot) 'crates/nitrate-app/nitrate.ico'),
     [string]$Edge = 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
 )
 $ErrorActionPreference = 'Stop'

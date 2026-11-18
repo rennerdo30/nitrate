@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **Ready for crates.io (not published):** the app crate is `nitrate-player` (the program is still `nitrate`). All four crates carry metadata, their own README and licence, and exact sibling versions. CI checks that they package and build from their packaged files alone, and a manual `publish-crate` workflow uploads them. The exe icon moved to `crates/nitrate-app/nitrate.ico`.
 - **Website** at nitrate.renner.dev (`website/`, deployed by hand through the Website Pages workflow) and a README with screenshots, install and usage.
 - `--start SECS` starts playback at a position, `--pause` opens a file paused, and `--hover F` points a `--snapshot` at the timeline.
 - `scripts/screenshots.ps1` retakes the screenshots from the real player with Nitrate's own demo footage (`scripts/demo-footage.py`).

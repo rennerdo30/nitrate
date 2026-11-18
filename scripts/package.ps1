@@ -57,7 +57,7 @@ function Invoke-Bounded([string]$File, [string[]]$Arguments, [int]$Seconds) {
 
 $cargo = (Get-Command cargo -ErrorAction Stop).Source
 if (!$BinDir) {
-    Invoke-Bounded $cargo @('build', '--release', '--locked', '-j', '8', '-p', 'nitrate') 3600 | Out-Null
+    Invoke-Bounded $cargo @('build', '--release', '--locked', '-j', '8', '-p', 'nitrate-player') 3600 | Out-Null
     $meta = Invoke-Bounded $cargo @('metadata', '--format-version', '1', '--no-deps') 120 | ConvertFrom-Json
     $BinDir = Join-Path $meta.target_directory 'release'
 }

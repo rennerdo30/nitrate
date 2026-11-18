@@ -21,7 +21,7 @@ if (-not (Test-Path $video)) {
 
 Push-Location $root
 try {
-    cargo build --release -p nitrate
+    cargo build --release -p nitrate-player
     if ($LASTEXITCODE) { throw 'build failed' }
     $meta = cargo metadata --format-version 1 --no-deps | ConvertFrom-Json
     $exe = Join-Path $meta.target_directory 'release/nitrate.exe'

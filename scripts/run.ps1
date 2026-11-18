@@ -15,7 +15,7 @@ if ($Pull) {
     if ($LASTEXITCODE) { throw 'Pull failed. Fix the checkout first.' }
 }
 $jobs = [Math]::Max(1, [Math]::Min(8, [int]([Environment]::ProcessorCount / 2)))
-$cargoArgs = @('build', '-j', "$jobs", '--quiet', '-p', 'nitrate')
+$cargoArgs = @('build', '-j', "$jobs", '--quiet', '-p', 'nitrate-player')
 if ($Release) { $cargoArgs += '--release' }
 Write-Host "Building Nitrate $(if ($Release) { '(release)' } else { '(debug)' })..."
 & cargo @cargoArgs

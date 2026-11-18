@@ -13,4 +13,4 @@ for arg in "$@"; do
 done
 cpus=$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 2)
 jobs=$(( cpus / 2 > 0 ? cpus / 2 : 1 )); [ "$jobs" -gt 8 ] && jobs=8
-exec cargo run "${release[@]}" -j "$jobs" --quiet -p nitrate -- "${args[@]}"
+exec cargo run "${release[@]}" -j "$jobs" --quiet -p nitrate-player -- "${args[@]}"

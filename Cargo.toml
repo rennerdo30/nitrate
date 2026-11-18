@@ -8,7 +8,15 @@ edition = "2024"
 rust-version = "1.100"
 license = "MIT"
 repository = "https://github.com/rennerdo30/nitrate"
-publish = false
+homepage = "https://nitrate.renner.dev"
+
+# Workspace crates, exact versions: crates.io needs a version on every path
+# dependency, and the four crates are always published together
+# (docs/RELEASING.md). Bump these with the workspace version.
+[workspace.dependencies]
+nitrate-mpv = { path = "crates/nitrate-mpv", version = "=0.1.0-beta.1" }
+nitrate-ui = { path = "crates/nitrate-ui", version = "=0.1.0-beta.1" }
+nitrate-update = { path = "crates/nitrate-update", version = "=0.1.0-beta.1" }
 
 # Fastest iteration (docs/BUILD.md):
 # - workspace crates: incremental, small debug info, fast to relink;

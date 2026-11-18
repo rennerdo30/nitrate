@@ -26,6 +26,18 @@ One version for the whole workspace: `version` under `[workspace.package]` in `C
 
 **File types:** the setup registers Nitrate per user for the media types in `installer/nitrate.nsi` (`TYPES`): "Open with" entries, a `Nitrate.Media` ProgID and a Default apps entry. It never takes over a default silently; the finish page offers to open Settings > Default apps. Uninstall removes only Nitrate's own values and keeps other apps' entries (the CI test checks this).
 
+## crates.io
+
+Nitrate is also packaged for `cargo install nitrate-player` (the program is still `nitrate`; the name `nitrate` on crates.io belongs to someone else). **Not published yet:** until Nitrate fetches its own libmpv or plays with a system libmpv on macOS and Linux, a Cargo install doesn't give people a working player, so the GitHub setup stays the main install path (Pair Desk NT-5).
+
+- **Four crates, one version, published together:** `nitrate-mpv`, `nitrate-ui`, `nitrate-update`, then `nitrate-player`. The app pins its siblings exactly in `[workspace.dependencies]`; bump those pins with the workspace version.
+- **What each crate ships:** its `include` list in its `Cargo.toml`, its own `README.md` (absolute links, so they work on crates.io) and a `LICENSE` copy. The exe icon lives in `crates/nitrate-app/nitrate.ico`, so a crates.io build embeds it too.
+- **Checked on every push:** CI job `crates` runs `scripts/check-crates.sh`: pinned versions match, LICENSE copies match the root, `cargo package` builds every crate from its packaged files alone, and each `.crate` stays under 10 MB. Nothing is uploaded.
+- **Publishing** needs the owner's yes, after the GitHub release for the same tag is published:
+  1. Once: create a crates.io API token with the publish scope only, and add it as the secret `CARGO_REGISTRY_TOKEN` in a repository environment `crates-io` with the owner as required reviewer.
+  2. Run the **publish-crate** workflow from the Actions tab with the tag. It checks that the tag matches the workspace version and is on `main`, runs the package check without the token, and only then runs `cargo publish --workspace`.
+- crates.io versions can't be deleted, only yanked. A wrong upload means a new version.
+
 ## Updates in the app
 
 - An installed release build (in `%LOCALAPPDATA%\Programs\nitrate`) checks GitHub releases once after start, at most once a day, on a worker thread. Development builds, `--smoke`/`--snapshot` runs and `NITRATE_NO_UPDATE` never check.
