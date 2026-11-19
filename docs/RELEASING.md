@@ -28,7 +28,7 @@ One version for the whole workspace: `version` under `[workspace.package]` in `C
 
 ## crates.io
 
-Nitrate is also packaged for `cargo install nitrate-player` (the program is still `nitrate`; the name `nitrate` on crates.io belongs to someone else). **Not published yet:** until Nitrate fetches its own libmpv or plays with a system libmpv on macOS and Linux, a Cargo install doesn't give people a working player, so the GitHub setup stays the main install path (Pair Desk NT-5).
+Nitrate is also packaged for `cargo install nitrate-player` (the program is still `nitrate`; the name `nitrate` on crates.io belongs to someone else). **0.1.0-beta.1 is on crates.io** (2026-11-19, owner's yes), published from `94a87fb` to secure the names. Until Nitrate fetches its own libmpv or plays with a system libmpv on macOS and Linux, a Cargo install needs libmpv by hand, so the GitHub setup stays the main install path (Pair Desk NT-5). crates.io allows one new crate per 10 minutes after a burst of 5; new crate names on the shared account follow the slot plan of the Development main.
 
 - **Four crates, one version, published together:** `nitrate-mpv`, `nitrate-ui`, `nitrate-update`, then `nitrate-player`. The app pins its siblings exactly in `[workspace.dependencies]`; bump those pins with the workspace version.
 - **What each crate ships:** its `include` list in its `Cargo.toml`, its own `README.md` (absolute links, so they work on crates.io) and a `LICENSE` copy. The exe icon lives in `crates/nitrate-app/nitrate.ico`, so a crates.io build embeds it too.

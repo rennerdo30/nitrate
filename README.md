@@ -25,7 +25,7 @@ Download the newest release from the [releases page](https://github.com/rennerdo
 - **Setup** (`nitrate-<version>-setup.exe`): installs for your user only, without admin rights. Adds a Start menu entry, puts Nitrate under "Open with" for 21 video and audio types and lists it in Settings > Default apps, where you can make it the default player (the setup's finish page has a shortcut). Installed copies check for updates once a day; when one appears, **Ctrl+Shift+U** installs it.
 - **Portable** (`nitrate-<version>-windows-x64.zip`): unpack anywhere and run `nitrate.exe`. Changes nothing on the PC and doesn't update itself.
 
-- **Cargo** (not published yet): `cargo install nitrate-player` will install the program `nitrate`; it needs `libmpv-2.dll` next to it or on `PATH` and doesn't update itself.
+- **Cargo:** `cargo install nitrate-player --version 0.1.0-beta.1` installs the program `nitrate` ([crates.io](https://crates.io/crates/nitrate-player)). It needs `libmpv-2.dll` next to it or on `PATH`, and doesn't update itself.
 
 The setup isn't code-signed yet, so Windows may warn on first run: *More info*, then *Run anyway*. Check downloads against `SHA256SUMS.txt` in the release. Needs a 64-bit CPU with AVX2.
 
